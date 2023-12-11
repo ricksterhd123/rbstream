@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.bindir = "bin"
-  spec.executables = ["console"]
+  spec.executables = ["rbstream"]
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem

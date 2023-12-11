@@ -1,6 +1,6 @@
 version: '2.2'
 services:
-  elasticsearch:
+  icecast:
     image: libretime/icecast:2.4.4
     environment:
       - ICECAST_SOURCE_PASSWORD=hackme!
@@ -9,3 +9,8 @@ services:
       - ICECAST_ADMIN_PASSWORD=hackme!
     ports:
       - 8000:8000
+
+  rbstream:
+    build: .
+    depends_on:
+      - icecast

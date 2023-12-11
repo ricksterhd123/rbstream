@@ -6,7 +6,7 @@ require "shout"
 
 puts "initializing..."
 
-client = Shout::ShoutClient.new("source", "hackme!", "localhost", 8000, "/stream")
+client = Shout::ShoutClient.new("source", "hackme!", "icecast", 8000, "/stream")
 client.begin do
   loop do
     play("examples/laugh.mp3")
