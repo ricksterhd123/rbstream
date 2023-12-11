@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
+# Ruby Stream
 module Rbstream
-  class Error < StandardError; end
-  # Your code goes here...
 end

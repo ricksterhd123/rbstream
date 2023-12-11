@@ -3,9 +3,18 @@
 
 require "bundler/setup"
 require "rbstream"
+require "shout"
 
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
+puts "initializing..."
+Shout.shout_init
 
-require "irb"
-IRB.start(__FILE__)
+puts "loaded libshout v#{Shout.shout_version}"
+
+t_shout = Shout.shout_new
+
+puts t_shout
+
+Shout.shout_free(t_shout)
+
+puts "shutting down..."
+Shout.shout_shutdown
