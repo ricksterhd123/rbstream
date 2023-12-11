@@ -109,9 +109,9 @@ module Shout
       # stream file to icecast2
       until file.eof?
         file_data = file.read(MAX_BUFFER_SIZE)
-        @buffer = FFI::MemoryPointer.from_string(file_data)
+        buffer = FFI::MemoryPointer.from_string(file_data)
         Shout.shout_sync(@t_shout)
-        send_result = Shout.shout_send(@t_shout, @buffer, MAX_BUFFER_SIZE)
+        send_result = Shout.shout_send(@t_shout, buffer, MAX_BUFFER_SIZE)
         raise StandardError, "Failed to play file #{file_path}, code: #{send_result}" if send_result != SHOUTERR_SUCCESS
 
         Shout.shout_delay(@t_shout)
@@ -124,7 +124,6 @@ module Shout
       instance_eval(&block)
     ensure
       puts "shutting down..."
-      @buffer.free
       Shout.shout_free(@t_shout)
       Shout.shout_close(@t_shout)
       Shout.shout_shutdown
