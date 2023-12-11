@@ -28,47 +28,34 @@ module Shout
   # Connection parameters
   attach_function :shout_set_host, %i[pointer string], :int
   attach_function :shout_get_host, %i[pointer], :string
-
   attach_function :shout_set_port, %i[pointer int], :int
   attach_function :shout_get_port, [:pointer], :int
-
   attach_function :shout_set_user, %i[pointer string], :int
   attach_function :shout_get_user, [:pointer], :string
-
   attach_function :shout_set_password, %i[pointer string], :int
   attach_function :shout_get_password, [:pointer], :string
-
   attach_function :shout_set_protocol, %i[pointer int], :int
   attach_function :shout_get_protocol, [:pointer], :int
-
   attach_function :shout_set_format, %i[pointer int], :int
   attach_function :shout_get_format, [:pointer], :int
-
   attach_function :shout_set_mount, %i[pointer string], :int
   attach_function :shout_get_mount, [:pointer], :string
-
   attach_function :shout_set_dumpfile, %i[pointer string], :int
   attach_function :shout_get_dumpfile, [:pointer], :string
-
   attach_function :shout_set_agent, %i[pointer string], :int
   attach_function :shout_get_agent, [:pointer], :string
 
   # Directory parameters
   attach_function :shout_set_public, %i[pointer int], :int
   attach_function :shout_get_public, [:pointer], :int
-
   attach_function :shout_set_name, %i[pointer string], :int
   attach_function :shout_get_name, [:pointer], :string
-
   attach_function :shout_set_url, %i[pointer string], :int
   attach_function :shout_get_url, [:pointer], :string
-
   attach_function :shout_set_genre, %i[pointer string], :int
   attach_function :shout_get_genre, [:pointer], :string
-
   attach_function :shout_set_description, %i[pointer string], :int
   attach_function :shout_get_description, [:pointer], :string
-
   attach_function :shout_set_audio_info, %i[pointer string string], :int
   attach_function :shout_get_audio_info, %i[pointer string], :string
 
