@@ -9,4 +9,4 @@ A proof of concept icecast2 source client in ruby
 
 ### Setup
 1. run `docker compose up`
-2. go to http://localhost:8000/stream
+2. go to http://localhost:8000/stream in the browser or optionally VLC player
