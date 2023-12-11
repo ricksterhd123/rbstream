@@ -65,8 +65,73 @@ module Shout
   attach_function :shout_metadata_add, %i[pointer string string], :int
   attach_function :shout_set_metadata, %i[pointer pointer], :int
 
+  SHOUTERR_SUCCESS = 0
+  SHOUT_PROTOCOL_HTTP = 0
+  SHOUT_FORMAT_MP3 = 1
+
   # override shout_version, set NULL to return const char* libshout version string
   def self.shout_version
     _shout_version(nil, nil, nil)
+  end
+
+  # A simple icecast .mp3 source client
+  class ShoutClient
+    MAX_BUFFER_SIZE = 4096
+
+    def initialize(user, password, host, port, mount) # rubocop:disable Metrics/MethodLength
+      Shout.shout_init
+
+      puts "loaded Shout v#{Shout.shout_version}"
+
+      @t_shout = Shout.shout_new
+
+      Shout.shout_set_host(@t_shout, host)
+      Shout.shout_set_protocol(@t_shout, Shout::SHOUT_PROTOCOL_HTTP)
+      Shout.shout_set_port(@t_shout, port)
+      Shout.shout_set_user(@t_shout, user)
+      Shout.shout_set_password(@t_shout, password)
+      Shout.shout_set_mount(@t_shout, mount)
+      Shout.shout_set_format(@t_shout, Shout::SHOUT_FORMAT_MP3)
+
+      open_result = Shout.shout_open(@t_shout)
+
+      return unless open_result != Shout::SHOUTERR_SUCCESS
+
+      raise StandardError,
+            "Failed to connect to server: http://#{user}:#{password}@#{host}:#{port}, code: #{open_result}"
+    end
+
+    def play(file_path) # rubocop:disable Metrics/MethodLength
+      file = File.open(file_path)
+
+      until file.eof?
+        # read file into byte array TODO: stream this
+        file_data = file.read(MAX_BUFFER_SIZE)
+
+        puts MAX_BUFFER_SIZE
+
+        @buffer = FFI::MemoryPointer.from_string(file_data)
+        Shout.shout_sync(@t_shout)
+        send_result = Shout.shout_send(@t_shout, @buffer, MAX_BUFFER_SIZE)
+        Shout.shout_delay(@t_shout)
+      end
+
+      return unless send_result != SHOUTERR_SUCCESS
+
+      raise StandardError,
+            "Failed to play file #{file_path}, code: #{send_result}"
+    ensure
+      file.close
+    end
+
+    def begin(&block)
+      instance_eval(&block)
+    ensure
+      puts "shutting down..."
+      @buffer.free
+      Shout.shout_free(@t_shout)
+      Shout.shout_close(@t_shout)
+      Shout.shout_shutdown
+    end
   end
 end
