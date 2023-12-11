@@ -8,5 +8,7 @@ puts "initializing..."
 
 client = Shout::ShoutClient.new("source", "hackme!", "localhost", 8000, "/stream")
 client.begin do
-  play("bin/oOi3oJmfz4o.mp3")
+  loop do
+    play("examples/laugh.mp3")
+  end
 end
