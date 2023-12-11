@@ -10,5 +10,6 @@ client = Shout::ShoutClient.new("source", "hackme!", "localhost", 8000, "/stream
 client.begin do
   loop do
     play("examples/laugh.mp3")
+    sleep 0.25
   end
 end

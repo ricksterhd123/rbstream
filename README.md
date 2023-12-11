@@ -1,3 +1,3 @@
 # rbstream
 
-Icecast2 source client streamer
+A proof of concept icecast2 source client in ruby

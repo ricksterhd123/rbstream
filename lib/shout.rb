@@ -74,7 +74,7 @@ module Shout
     _shout_version(nil, nil, nil)
   end
 
-  # A simple icecast .mp3 source client
+  # ShoutClient provides a simple API to play .mp3 files to icecast2
   class ShoutClient
     MAX_BUFFER_SIZE = 4096
 
@@ -102,24 +102,20 @@ module Shout
     end
 
     def play(file_path) # rubocop:disable Metrics/MethodLength
+      puts "playing #{file_path}"
+
       file = File.open(file_path)
 
+      # stream file to icecast2
       until file.eof?
-        # read file into byte array TODO: stream this
         file_data = file.read(MAX_BUFFER_SIZE)
-
-        puts MAX_BUFFER_SIZE
-
         @buffer = FFI::MemoryPointer.from_string(file_data)
         Shout.shout_sync(@t_shout)
         send_result = Shout.shout_send(@t_shout, @buffer, MAX_BUFFER_SIZE)
+        raise StandardError, "Failed to play file #{file_path}, code: #{send_result}" if send_result != SHOUTERR_SUCCESS
+
         Shout.shout_delay(@t_shout)
       end
-
-      return unless send_result != SHOUTERR_SUCCESS
-
-      raise StandardError,
-            "Failed to play file #{file_path}, code: #{send_result}"
     ensure
       file.close
     end

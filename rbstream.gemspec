@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["ricksterhd123"]
   spec.email = ["ricksterhd123@gmail.com"]
 
-  spec.summary = "An icecast2 source client"
-  spec.description = "An icecast2 source client"
+  spec.summary = "A proof of concept icecast2 source client in ruby"
+  spec.description = "A proof of concept icecast2 source client in ruby"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6.0"
 
