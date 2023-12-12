@@ -103,15 +103,22 @@ module Shout
 
     def play(file_path) # rubocop:disable Metrics/MethodLength
       puts "playing #{file_path}"
-
       file = File.open(file_path)
+
+      # read first 3 bytes to check it looks like an .mp3 file
+      # https://stackoverflow.com/questions/7302439/how-can-i-determine-that-a-particular-file-is-in-fact-an-mp3-file
+      magic_numbers = file.read(3).bytes
+      raise StandardError, "Invalid .mp3 file detected!" unless [[73, 68, 51], [255, 251]].include?(magic_numbers)
+
+      file.rewind
 
       # stream file to icecast2
       until file.eof?
-        file_data = file.read(MAX_BUFFER_SIZE)
-        buffer = FFI::MemoryPointer.from_string(file_data)
+        buffer = FFI::MemoryPointer.from_string(file.read(MAX_BUFFER_SIZE))
+
         Shout.shout_sync(@t_shout)
-        send_result = Shout.shout_send(@t_shout, buffer, MAX_BUFFER_SIZE)
+
+        send_result = Shout.shout_send(@t_shout, buffer, buffer.size)
         raise StandardError, "Failed to play file #{file_path}, code: #{send_result}" if send_result != SHOUTERR_SUCCESS
 
         Shout.shout_delay(@t_shout)
@@ -123,7 +130,6 @@ module Shout
     def begin(&block)
       instance_eval(&block)
     ensure
-      puts "shutting down..."
       Shout.shout_free(@t_shout)
       Shout.shout_close(@t_shout)
       Shout.shout_shutdown
