@@ -6,7 +6,7 @@ WORKDIR /rbstream
 COPY Gemfile Gemfile.lock rbstream.gemspec ./
 
 # install gems
-RUN bundle install
+RUN bundle install --without development test
 
 COPY . .
 
