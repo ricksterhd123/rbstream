@@ -1,13 +1,92 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "bundler/setup"
 require "shout"
+require "rbstream"
+require "optparse"
+require "logger"
 
-client = Shout::ShoutClient.new("source", "hackme!", "icecast", 8000, "/stream")
-client.begin do
-  loop do
-    play("examples/laugh.mp3")
-    sleep 0.25
+logger = Logger.new($stdout)
+options = {}
+
+opt_parse = OptionParser.new do |parser|
+  parser.banner = "Usage: rbstream\n\tAn icecast2 source client\n\Parameters:"
+
+  parser.on("--username USERNAME", String, "Username to icecast2 server source") do |username|
+    options[:user] = username
   end
+
+  parser.on("--password PASSWORD", String, "Password to icecast2 server source") do |password|
+    options[:password] = password
+  end
+
+  parser.on("--hostname HOSTNAME", String, "URI of icecast2 server, defaults to localhost") do |hostname|
+    options[:host] = hostname
+  end
+
+  parser.on("--port PORT", Integer, "Port of icecast2 server, defaults to 8000") do |port|
+    options[:port] = port
+  end
+
+  parser.on("--mount MOUNT", String, "mount point of icecast2 server, e.g. /stream") do |mount|
+    options[:mount] = mount
+  end
+
+  parser.on("--playlist FILE", String, "the playlist file to read from") do |playlist|
+    options[:playlist] = playlist
+  end
+end
+opt_parse.parse!
+
+user, password, host, port, mount, playlist = options.values_at(
+  :user, :password, :host, :port, :mount, :playlist
+)
+
+user ||= "source"
+host ||= "127.0.0.1"
+port ||= 8000
+mount ||= "/stream"
+
+abort(opt_parse.help) if !password || !playlist
+
+begin
+  playlist_path = options[:playlist]
+  playlist_root = File.expand_path(File.dirname(playlist_path))
+
+  playlist = Rbstream::Playlist.from_file(playlist_path)
+
+  raise StandardError, "No such file or directory #{playlist_path}" unless playlist
+
+  logger.info "Loaded libshout v#{Shout.shout_version}"
+
+  config = {
+    user:,
+    password:,
+    host:,
+    port:,
+    mount:
+  }
+
+  # "source", "hackme!", "localhost", 8000, "/stream"
+  client = Shout::ShoutClient.new(config)
+
+  logger.info "Connected to #{config}"
+
+  client.begin do
+    loop do
+      track = playlist.current
+
+      _, track_uri = track.uri.split("://")
+      file_path = "#{playlist_root}/#{track_uri}"
+
+      logger.info("Playing #{file_path}")
+
+      play(file_path)
+
+      playlist.next
+      sleep 0.25
+    end
+  end
+rescue Errno::ENOENT => e
+  logger.error(e)
 end

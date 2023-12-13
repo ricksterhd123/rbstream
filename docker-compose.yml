@@ -12,5 +12,10 @@ services:
 
   rbstream:
     build: .
+    environment:
+      - ICECAST2_HOST=icecast
+      - ICECAST2_PORT=8000
+      - ICECAST2_SOURCE_PASSWORD=hackme!
+      - ICECAST2_SOURCE_MOUNT=/stream
     depends_on:
       - icecast

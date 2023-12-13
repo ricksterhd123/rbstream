@@ -10,4 +10,4 @@ RUN bundle install --without development test
 
 COPY . .
 
-CMD bundle && bundle exec rbstream
+CMD bundle && bundle exec rbstream --password $ICECAST2_SOURCE_PASSWORD --hostname $ICECAST2_HOST --port $ICECAST2_PORT --mount $ICECAST2_SOURCE_MOUNT --playlist examples/playlist.json

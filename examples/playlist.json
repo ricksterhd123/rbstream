@@ -1,0 +1,9 @@
+{
+  "tracks": [
+    {
+      "uri": "file://laugh.mp3",
+      "format": "mp3",
+      "metadata": {}
+    }
+  ]
+}
