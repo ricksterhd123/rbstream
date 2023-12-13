@@ -101,7 +101,7 @@ module Shout
             "Failed to connect to server: http://#{user}:#{password}@#{host}:#{port}, code: #{open_result}"
     end
 
-    def play(file_path) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def play(file_path) # rubocop:disable Metrics/MethodLength
       file = File.open(file_path)
 
       # read first 3 bytes to check it looks like an .mp3 file
