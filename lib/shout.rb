@@ -78,10 +78,10 @@ module Shout
   class ShoutClient
     MAX_BUFFER_SIZE = 4096
 
-    def initialize(user, password, host, port, mount) # rubocop:disable Metrics/MethodLength
-      Shout.shout_init
+    def initialize(config) # rubocop:disable Metrics/MethodLength
+      user, password, host, port, mount = config.values_at(:user, :password, :host, :port, :mount)
 
-      puts "loaded Shout v#{Shout.shout_version}"
+      Shout.shout_init
 
       @t_shout = Shout.shout_new
 
@@ -101,8 +101,7 @@ module Shout
             "Failed to connect to server: http://#{user}:#{password}@#{host}:#{port}, code: #{open_result}"
     end
 
-    def play(file_path) # rubocop:disable Metrics/MethodLength
-      puts "playing #{file_path}"
+    def play(file_path) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       file = File.open(file_path)
 
       # read first 3 bytes to check it looks like an .mp3 file
@@ -124,7 +123,7 @@ module Shout
         Shout.shout_delay(@t_shout)
       end
     ensure
-      file.close
+      file&.close
     end
 
     def begin(&block)
